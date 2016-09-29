@@ -138,15 +138,15 @@ new Vue({
         minDate: function(card: any) {
             return card.transactions.reduce(
                 (p: number, t: any) => 
-                (p == -1 ) ? Math.min(p, t.transactionDateTime) : t.transactionDateTime, 
-                false
+                (p != -1) ? Math.min(p, t.transactionDateTime) : t.transactionDateTime, 
+                -1
             )
         },
         maxDate: function(card: any) {
             return card.transactions.reduce(
                 (p: number, t: any) => 
-                (p == -1) ? Math.max(p, t.transactionDateTime) : t.transactionDateTime, 
-                false
+                (p != -1) ? Math.max(p, t.transactionDateTime) : t.transactionDateTime, 
+                -1
             )
         },
         chargeSum: function(card: any) {
@@ -166,14 +166,16 @@ new Vue({
     },
     ready: function(){
         this.cards.forEach((card: any) => {
+            card.transactions = card.transactions.filter((c: any) => c.transactionName == 'Check-uit' || c.transactionName == 'Check-in');
             for(var i = 0; i < card.transactions.length; i++) {
                 let d = card.transactions[i];
                 let next = card.transactions[i+1];
                 if(d.transactionName == 'Check-in' && next && next.transactionName == "Check-uit") {
-                    next.checkInTime = d.transactionDateTime;
-                } else if(d.transactionName == 'Check-uit') {
-                    d.checkOutInfo = d.transactionInfo;
-                    d.checkOutTime = d.transactionDateTime;
+                    Vue.set(next, "checkInTime", d.transactionDateTime);
+                }
+                if(d.transactionName == 'Check-uit') {
+                    Vue.set(d, "checkOutInfo", d.transactionInfo);
+                    Vue.set(d, "checkOutTime", d.transactionDateTime);
                 }
             }
             card.transactions = card.transactions.filter((c: any) => c.transactionName == 'Check-uit');

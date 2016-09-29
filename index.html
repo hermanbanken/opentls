@@ -1,7 +1,7 @@
 <html>
 <link rel="stylesheet" type="text/css" href="app.css" />
 <div id="app" class="print-overview">
-    <div v-for="card in cards | filterBy 'fare'">
+    <div v-for="card in cards">
         <h1>Kaart {{card.type}}: {{card.alias}}</h1>
         <h1>Specifieke transacties</h1>
         <table>
@@ -41,6 +41,7 @@
                 <td>{{ t.checkOutTime | dateTime}}</td>
                 <td>{{ t.checkOutInfo}}</td>
                 <td>{{ t.fare}}</td>
+                <td>{{ t.transactionName}}</td>
                 <td>{{ t.productInfo}}</td>
                 <td>{{ t.notes || ""}}</td>
             </tr>
