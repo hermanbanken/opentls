@@ -1,7 +1,36 @@
 <html>
-<div id="app"></div>
-<script src="build/app.js"></script>
+<link rel="stylesheet" type="text/css" href="app.css" />
+<div id="app" class="print-overview">
+    <h1>Kaart {{card.type}}: {{card.alias}}</h1>
+    <h1>Specifieke transacties</h1>
+    <div v-for="card in cards">
+        <table>
+            <tr><th>Kaartnummer</th><td colspan=3>{{card.mediumId}}</td></tr>
+            <tr><th>Naam</th><td colspan=3>{{person.name}}</td></tr>
+            <tr><th>Adres</th><td colspan=3>{{person.address.street}}</td></tr>
+            <tr><th>Postcode</th><td colspan=3>{{person.address.zipcode}}</td></tr>
+            <tr><th>Woonplaats</th><td colspan=3>{{person.address.city}}</td></tr>
+            <tr><td colspan=4></td></tr>
+            <tr><th>Transacties</th><td></td></tr>
+            <tr>
+                <th>Periode van</th><td>{{minDate}}</td>
+                <th>Totaal declaratie</th><td>{{fareSum}}</td>
+            </tr>
+            <tr>
+                <th>Periode t/m</th><td>{{maxDate}}</td>
+                <th>Totaal geladen</th><td>{{chargeSum}}</td>
+            </tr>
+        </table>
+        <p>{{card.statusAnnouncement}}</p>
+        <ul>
+            <li v-for="t in card.transactions">
+                {{t.transactionDateTime | date}}
+            </li>
+        </ul>
+    </div>
+</div>
 <script src="bower_components/es6-promise/es6-promise.min.js"></script>
 <script src="bower_components/fetch/fetch.js"></script>
 <script src="bower_components/vue/dist/vue.js"></script>
+<script src="build/app.js"></script>
 </html>

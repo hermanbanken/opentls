@@ -98,7 +98,23 @@ function get_transaction_list(authorizationToken: string, mediumId: string, offs
     })
 }
 
+Vue.filter('date', function (timestamp: number) {
+    let date = new Date(timestamp);
+    let day = date.toISOString().slice(0, 10);
+    return day;
+})
+
 new Vue({
     el: '#app',
-    data: { cards: OV }
+    data: { 
+        cards: OV,
+        person: {
+            name: "John Doe",
+            address: {
+                city: "Amsterdam",
+                zipCode: "1000AA",
+                street: "Prinsengracht 1",
+            }
+        }
+    }
 })
