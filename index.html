@@ -1,32 +1,50 @@
 <html>
 <link rel="stylesheet" type="text/css" href="app.css" />
 <div id="app" class="print-overview">
-    <h1>Kaart {{card.type}}: {{card.alias}}</h1>
-    <h1>Specifieke transacties</h1>
-    <div v-for="card in cards">
+    <div v-for="card in cards | filterBy 'fare'">
+        <h1>Kaart {{card.type}}: {{card.alias}}</h1>
+        <h1>Specifieke transacties</h1>
         <table>
             <tr><th>Kaartnummer</th><td colspan=3>{{card.mediumId}}</td></tr>
-            <tr><th>Naam</th><td colspan=3>{{person.name}}</td></tr>
+            <tr><th>Naam</th><td colspan=3>{{person.name | toUpper}}</td></tr>
             <tr><th>Adres</th><td colspan=3>{{person.address.street}}</td></tr>
-            <tr><th>Postcode</th><td colspan=3>{{person.address.zipcode}}</td></tr>
-            <tr><th>Woonplaats</th><td colspan=3>{{person.address.city}}</td></tr>
+            <tr><th>Postcode</th><td colspan=3>{{person.address.zipcode | toUpper}}</td></tr>
+            <tr><th>Woonplaats</th><td colspan=3>{{person.address.city | toUpper}}</td></tr>
             <tr><td colspan=4></td></tr>
-            <tr><th>Transacties</th><td></td></tr>
+            <tr><th colspan=2>Transacties</th></tr>
             <tr>
-                <th>Periode van</th><td>{{minDate}}</td>
-                <th>Totaal declaratie</th><td>{{fareSum}}</td>
+                <th>Periode van</th><td>{{minDate(card) | date}}</td>
+                <th>Totaal declaratie</th><td>&euro; {{fareSum(card)}}</td>
             </tr>
             <tr>
-                <th>Periode t/m</th><td>{{maxDate}}</td>
-                <th>Totaal geladen</th><td>{{chargeSum}}</td>
+                <th>Periode t/m</th><td>{{maxDate(card) | date}}</td>
+                <th>Totaal geladen</th><td>&euro; {{chargeSum(card)}}</td>
             </tr>
         </table>
         <p>{{card.statusAnnouncement}}</p>
-        <ul>
-            <li v-for="t in card.transactions">
-                {{t.transactionDateTime | date}}
-            </li>
-        </ul>
+        <table>
+            <thead>
+                <th>Datum</th>
+                <th>Check-in</th>
+                <th>Vertrek</th>
+                <th>Check-uit</th>
+                <th>Bestemming</th>
+                <th>Bedrag</th>
+                <th>Transactie</th>
+                <th>Product</th>
+                <th>Opmerkingen</th>
+            </thead>
+            <tr v-for="t in card.transactions">
+                <td>{{t.transactionDateTime | dateDay}}</td>
+                <td>{{ t.checkInTime | dateTime}}</td>
+                <td>{{ t.checkInInfo}}</td>
+                <td>{{ t.checkOutTime | dateTime}}</td>
+                <td>{{ t.checkOutInfo}}</td>
+                <td>{{ t.fare}}</td>
+                <td>{{ t.productInfo}}</td>
+                <td>{{ t.notes || ""}}</td>
+            </tr>
+        </table>
     </div>
 </div>
 <script src="bower_components/es6-promise/es6-promise.min.js"></script>

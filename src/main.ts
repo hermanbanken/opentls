@@ -99,9 +99,26 @@ function get_transaction_list(authorizationToken: string, mediumId: string, offs
 }
 
 Vue.filter('date', function (timestamp: number) {
-    let date = new Date(timestamp);
+    let date = new Date(timestamp || 0);
+    let day = date.toISOString().slice(0, 10);
+    let time = date.toISOString().slice(11,19);
+    return `${day} ${time}`;
+})
+
+Vue.filter('dateTime', function (timestamp: number) {
+    let date = new Date(timestamp || 0);
+    let time = date.toISOString().slice(11,19);
+    return time;
+})
+
+Vue.filter('dateDay', function (timestamp: number) {
+    let date = new Date(timestamp || 0);
     let day = date.toISOString().slice(0, 10);
     return day;
+})
+
+Vue.filter('toUpper', function (text: string) {
+    return text && text.toUpperCase();
 })
 
 new Vue({
@@ -112,9 +129,54 @@ new Vue({
             name: "John Doe",
             address: {
                 city: "Amsterdam",
-                zipCode: "1000AA",
+                zipcode: "1000AA",
                 street: "Prinsengracht 1",
             }
         }
+    },
+    methods: {
+        minDate: function(card: any) {
+            return card.transactions.reduce(
+                (p: number, t: any) => 
+                (p == -1 ) ? Math.min(p, t.transactionDateTime) : t.transactionDateTime, 
+                false
+            )
+        },
+        maxDate: function(card: any) {
+            return card.transactions.reduce(
+                (p: number, t: any) => 
+                (p == -1) ? Math.max(p, t.transactionDateTime) : t.transactionDateTime, 
+                false
+            )
+        },
+        chargeSum: function(card: any) {
+            return card.transactions.reduce(
+                (p: number, t: any) => 
+                p + Math.max(0, t.ePurseMut), 
+                0
+            )
+        },
+        fareSum: function(card: any) {
+            return card.transactions.reduce(
+                (p: number, t: any) => 
+                p + (t.fare || 0), 
+                0
+            )
+        }
+    },
+    ready: function(){
+        this.cards.forEach((card: any) => {
+            for(var i = 0; i < card.transactions.length; i++) {
+                let d = card.transactions[i];
+                let next = card.transactions[i+1];
+                if(d.transactionName == 'Check-in' && next && next.transactionName == "Check-uit") {
+                    next.checkInTime = d.transactionDateTime;
+                } else if(d.transactionName == 'Check-uit') {
+                    d.checkOutInfo = d.transactionInfo;
+                    d.checkOutTime = d.transactionDateTime;
+                }
+            }
+            card.transactions = card.transactions.filter((c: any) => c.transactionName == 'Check-uit');
+        })
     }
 })
