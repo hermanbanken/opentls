@@ -1,0 +1,22 @@
+{
+  "name": "opentls",
+  "version": "1.0.0",
+  "description": "Uw data is van u en niet van TLS.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/StichtingOpenGeo/opentls.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/StichtingOpenGeo/opentls/issues"
+  },
+  "homepage": "https://github.com/StichtingOpenGeo/opentls#readme"
+}
