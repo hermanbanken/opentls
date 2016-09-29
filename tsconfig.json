@@ -1,7 +1,8 @@
 {
     "compileOnSave": true,
     "compilerOptions": {
-        "module": "commonjs",
+        "target": "ES5",
+        "module": "amd",
         "noImplicitAny": true,
         "removeComments": true,
         "preserveConstEnums": true,
@@ -9,6 +10,7 @@
         "sourceMap": true
     },
     "include": [
-        "src/**/*"
+        "src/**/*",
+        "src/*"
     ]
 }

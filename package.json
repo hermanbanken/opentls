@@ -18,5 +18,13 @@
   "bugs": {
     "url": "https://github.com/StichtingOpenGeo/opentls/issues"
   },
-  "homepage": "https://github.com/StichtingOpenGeo/opentls#readme"
+  "homepage": "https://github.com/StichtingOpenGeo/opentls#readme",
+  "devDependencies": {
+    "browserify": "^13.1.0",
+    "tsify": "^1.0.7",
+    "typescript": "^2.0.3"
+  },
+  "dependencies": {
+    "pinkie-promise": "^2.0.1"
+  }
 }

@@ -1,7 +1,7 @@
 /// <reference path="../typings/index.d.ts" />
 import 'whatwg-fetch';
 
-let OV = require('json!../python/ov.json')
+let OV = require('../python/ov.json')
 
 function formData(obj: { [s: string]: (string | number); }) {
     let data = new FormData()
@@ -20,6 +20,7 @@ class Transaction {
 }
 
 function get_token(username: string, password: string, client_id = CLIENT_ID, client_secret = CLIENT_SECRET): Promise<any> {
+    console.log("getting token")
     return fetch("https://login.ov-chipkaart.nl/oauth2/token", {
         method: 'POST',
         body: formData({
@@ -99,5 +100,5 @@ function get_transaction_list(authorizationToken: string, mediumId: string, offs
 
 new Vue({
     el: '#app',
-    data: OV
+    data: { cards: OV }
 })
