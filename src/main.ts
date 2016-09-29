@@ -121,6 +121,10 @@ Vue.filter('toUpper', function (text: string) {
     return text && text.toUpperCase();
 })
 
+Vue.filter('euro', function (money: number) {
+    return money && ("€ " + money.toFixed(2));
+})
+
 new Vue({
     el: '#app',
     data: { 
@@ -169,7 +173,7 @@ new Vue({
             card.transactions = card.transactions.filter((c: any) => c.transactionName == 'Check-uit' || c.transactionName == 'Check-in');
             for(var i = 0; i < card.transactions.length; i++) {
                 let d = card.transactions[i];
-                let next = card.transactions[i+1];
+                let next = card.transactions[i-1];
                 if(d.transactionName == 'Check-in' && next && next.transactionName == "Check-uit") {
                     Vue.set(next, "checkInTime", d.transactionDateTime);
                 }

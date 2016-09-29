@@ -1,4 +1,5 @@
 <html>
+<meta charset="UTF-8">
 <link rel="stylesheet" type="text/css" href="app.css" />
 <div id="app" class="print-overview">
     <div v-for="card in cards">
@@ -14,11 +15,11 @@
             <tr><th colspan=2>Transacties</th></tr>
             <tr>
                 <th>Periode van</th><td>{{minDate(card) | date}}</td>
-                <th>Totaal declaratie</th><td>&euro; {{fareSum(card)}}</td>
+                <th>Totaal declaratie</th><td>{{fareSum(card) | euro}}</td>
             </tr>
             <tr>
                 <th>Periode t/m</th><td>{{maxDate(card) | date}}</td>
-                <th>Totaal geladen</th><td>&euro; {{chargeSum(card)}}</td>
+                <th>Totaal geladen</th><td>{{chargeSum(card) | euro}}</td>
             </tr>
         </table>
         <p>{{card.statusAnnouncement}}</p>
@@ -40,7 +41,7 @@
                 <td>{{ t.checkInInfo}}</td>
                 <td>{{ t.checkOutTime | dateTime}}</td>
                 <td>{{ t.checkOutInfo}}</td>
-                <td>{{ t.fare}}</td>
+                <td>{{ t.fare | euro}}</td>
                 <td>{{ t.transactionName}}</td>
                 <td>{{ t.productInfo}}</td>
                 <td>{{ t.notes || ""}}</td>

@@ -8,3 +8,10 @@ table { width: 100%; }
 table th, table td {
     text-align: left;
 }
+
+td {
+    white-space: nowrap;
+    max-width: 12em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
