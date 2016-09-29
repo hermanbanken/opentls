@@ -1,0 +1,10 @@
+.print-overview h1 {
+    font-size: 1rem;
+    font-weight: normal;
+}
+
+table { width: 100%; }
+
+table th, table td {
+    text-align: left;
+}
