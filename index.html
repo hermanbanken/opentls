@@ -1,11 +1,16 @@
 <html>
+<title>Dit overzicht voldoet aan de eisen van de Belastingdienst.</title>
 <meta charset="UTF-8">
 <link rel="stylesheet" type="text/css" href="app.css" />
-<div id="app" class="print-overview">
-    <div v-for="card in cards">
-        <h1>Kaart {{card.type}}: {{card.alias}}</h1>
-        <h1>Specifieke transacties</h1>
-        <table>
+<div id="app" class="print-overview" v-cloak>
+    <div v-for="card in cards" class="spec" v-show="fareSum(card) > 0">
+        <div class="banner">
+            <div class="line"></div>
+            <img src="ovchipkaart.png" />
+        </div>
+        <table class="info">
+            <tr><td colspan=4>Specifieke transacties</td></tr>
+            <tr><td colspan=4></td></tr>
             <tr><th>Kaartnummer</th><td colspan=3>{{card.mediumId}}</td></tr>
             <tr><th>Naam</th><td colspan=3>{{person.name | toUpper}}</td></tr>
             <tr><th>Adres</th><td colspan=3>{{person.address.street}}</td></tr>
@@ -14,16 +19,16 @@
             <tr><td colspan=4></td></tr>
             <tr><th colspan=2>Transacties</th></tr>
             <tr>
-                <th>Periode van</th><td>{{minDate(card) | date}}</td>
+                <th>Periode van</th><td>{{minDate(card) | dateDay}}</td>
                 <th>Totaal declaratie</th><td>{{fareSum(card) | euro}}</td>
             </tr>
             <tr>
-                <th>Periode t/m</th><td>{{maxDate(card) | date}}</td>
+                <th>Periode t/m</th><td>{{maxDate(card) | dateDay}}</td>
                 <th>Totaal geladen</th><td>{{chargeSum(card) | euro}}</td>
             </tr>
         </table>
         <p>{{card.statusAnnouncement}}</p>
-        <table>
+        <table class="fares">
             <thead>
                 <th>Datum</th>
                 <th>Check-in</th>
@@ -35,7 +40,7 @@
                 <th>Product</th>
                 <th>Opmerkingen</th>
             </thead>
-            <tr v-for="t in card.transactions">
+            <tr v-for="t in card.transactions | reverse">
                 <td>{{t.transactionDateTime | dateDay}}</td>
                 <td>{{ t.checkInTime | dateTime}}</td>
                 <td>{{ t.checkInInfo}}</td>
@@ -52,5 +57,7 @@
 <script src="bower_components/es6-promise/es6-promise.min.js"></script>
 <script src="bower_components/fetch/fetch.js"></script>
 <script src="bower_components/vue/dist/vue.js"></script>
+<script src="bower_components/moment/min/moment.min.js"></script>
+<script src="bower_components/moment-timezone/builds/moment-timezone-with-data.js"></script>
 <script src="build/app.js"></script>
 </html>

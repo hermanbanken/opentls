@@ -1,17 +1,92 @@
+html {
+    font-family: Arial;
+    font-size: 13pt;
+}
+
+[v-cloak] {
+    display: none;
+}
+
+.spec {
+    overflow: hidden;
+}
+
 .print-overview h1 {
     font-size: 1rem;
     font-weight: normal;
 }
 
-table { width: 100%; }
+table {
+    border-collapse: collapse;
+}
 
 table th, table td {
     text-align: left;
 }
 
-td {
+td:empty {
+    height: 0.9em;
+}
+
+table.info {
+    min-width: 72vw;
+}
+
+table.fares { 
+    font-size: .7em;
+    width: 100%;
+}
+table.fares th { font-weight: normal; }
+
+table.fares td, table.fares th {
     white-space: nowrap;
     max-width: 12em;
     overflow: hidden;
     text-overflow: ellipsis;
+    padding: 2pt 4pt;
+}
+
+table.fares thead {
+    background-color: rgb(217, 26, 115);
+}
+
+table.fares tr:nth-child(even) {
+    background: rgb(247, 204, 225);
+}
+
+.banner {
+    border-top: 3px solid black;
+    border-bottom: 1em solid rgb(217, 26, 115);
+    height: 0;
+    margin: 1em 0;
+}
+
+.banner img {
+    width: 20vw;
+    float: right;
+    margin-top: -0.7em;
+    border-left: 1em solid white;
+    border-right: 3em solid white;
+}
+
+@media print {
+    @page {size: landscape}
+    table.fares thead {
+        background-color: rgb(217, 26, 115) !important;
+        -webkit-print-color-adjust: exact;
+    }
+    table.fares tr:nth-child(even) {
+        background: rgb(247, 204, 225) !important;
+        -webkit-print-color-adjust: exact;
+    }
+    .spec {
+        page-break-before: always;
+    }
+    .banner {
+        border-top: 3px solid black;
+        border-bottom: 10px solid rgb(217, 26, 115);
+        height: 0;
+        -webkit-print-color-adjust: exact;
+    }
+
 }

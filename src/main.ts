@@ -1,6 +1,8 @@
 /// <reference path="../typings/index.d.ts" />
 import 'whatwg-fetch';
+import 'moment-timezone';
 
+let moment = require('moment-timezone');
 let OV = require('../python/ov.json')
 
 function formData(obj: { [s: string]: (string | number); }) {
@@ -98,23 +100,20 @@ function get_transaction_list(authorizationToken: string, mediumId: string, offs
     })
 }
 
+Vue.filter('reverse', function <T> (list: [T]) {
+    return list.slice().reverse();
+})
+
 Vue.filter('date', function (timestamp: number) {
-    let date = new Date(timestamp || 0);
-    let day = date.toISOString().slice(0, 10);
-    let time = date.toISOString().slice(11,19);
-    return `${day} ${time}`;
+    return moment(timestamp).tz('Europe/Amsterdam').format('DD-MM-YYYY HH:mm')
 })
 
 Vue.filter('dateTime', function (timestamp: number) {
-    let date = new Date(timestamp || 0);
-    let time = date.toISOString().slice(11,19);
-    return time;
+    return moment(timestamp).tz('Europe/Amsterdam').format('HH:mm')
 })
 
 Vue.filter('dateDay', function (timestamp: number) {
-    let date = new Date(timestamp || 0);
-    let day = date.toISOString().slice(0, 10);
-    return day;
+    return moment(timestamp).tz('Europe/Amsterdam').format('DD-MM-YYYY')
 })
 
 Vue.filter('toUpper', function (text: string) {
@@ -122,7 +121,7 @@ Vue.filter('toUpper', function (text: string) {
 })
 
 Vue.filter('euro', function (money: number) {
-    return money && ("€ " + money.toFixed(2));
+    return money && ("€ " + money.toFixed(2).replace(',', '').replace('.', ','));
 })
 
 new Vue({
