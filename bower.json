@@ -1,0 +1,25 @@
+{
+  "name": "opentls",
+  "description": "Uw data is van u en niet van TLS.",
+  "main": "build/app.js",
+  "authors": [
+    "Herman Banken <hermanbanken@gmail.com>"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/StichtingOpenGeo/opentls",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "fetch": "^1.0.0",
+    "es6-promise": "^4.0.3",
+    "moment": "^2.15.1",
+    "moment-timezone": "^0.5.5",
+    "vue": "^1.0.28"
+  }
+}
