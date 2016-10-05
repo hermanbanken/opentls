@@ -2,11 +2,14 @@
   "name": "opentls",
   "version": "1.0.0",
   "description": "Uw data is van u en niet van TLS.",
-  "main": "index.js",
+  "main": "run.js",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
+    "compile": "tsc",
+    "start": "node build/main.js",
+    "bundle": "browserify build/main.js > build/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -25,6 +28,7 @@
     "typescript": "^2.0.3"
   },
   "dependencies": {
+    "@types/es6-promise": "0.0.32",
     "pinkie-promise": "^2.0.1"
   }
 }

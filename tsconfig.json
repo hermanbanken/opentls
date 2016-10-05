@@ -2,15 +2,19 @@
     "compileOnSave": true,
     "compilerOptions": {
         "target": "ES5",
-        "module": "amd",
         "noImplicitAny": true,
         "removeComments": true,
         "preserveConstEnums": true,
-        "outFile": "build/app.js",
-        "sourceMap": true
+        "sourceMap": true,
+        "outDir": "build"
     },
     "include": [
         "src/**/*",
         "src/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "typings/index",
+        "typings/index.d.ts"
     ]
 }
