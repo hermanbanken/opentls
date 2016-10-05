@@ -28,6 +28,34 @@
             </tr>
         </table>
         <p>{{card.statusAnnouncement}}</p>
+
+        <h3 class="noprint">Filters</h3>
+        <ul class="noprint filters">
+            <li v-for="filter in filters" class="filter">
+                <label>Locatie:
+                <select v-model="filter.location">
+                    <option v-for="location in locations">{{ location }}</option>
+                </select>
+                </label>
+                <div class='checkboxes'>
+                    <label v-for="i in days()" class='vertical-checkbox'>                
+                        <input type="checkbox" v-model="filter.days" v-bind:value="i" />
+                        <span>{{i}}</span>
+                    </label>
+                </div>
+                <div class='checkboxes'>
+                    <button v-on:click="toggleDays(filter.days,'work')">Werkdagen</button>
+                    <button v-on:click="toggleDays(filter.days,'all')">Alle</button>
+                </div>
+            </li>
+            <li>
+                <span v-if="!filters || filters.length == 0">Alle reizen worden weergegeven.</span>
+                Wil je <a href="#" v-on:click="addEmptyFilter()">een filter toevoegen</a>?
+            </li>
+        </ul>
+
+        <h3 class="noprint">Reizen</h3>
+
         <table class="fares">
             <thead>
                 <th>Datum</th>
@@ -40,16 +68,16 @@
                 <th>Product</th>
                 <th>Opmerkingen</th>
             </thead>
-            <tr v-for="t in card.transactions | reverse">
-                <td>{{t.transactionDateTime | dateDay}}</td>
-                <td>{{ t.checkInTime | dateTime}}</td>
-                <td>{{ t.checkInInfo}}</td>
-                <td>{{ t.checkOutTime | dateTime}}</td>
-                <td>{{ t.checkOutInfo}}</td>
-                <td>{{ t.fare | euro}}</td>
-                <td>{{ t.transactionName}}</td>
-                <td>{{ t.productInfo}}</td>
-                <td>{{ t.notes || ""}}</td>
+            <tr v-for="t in travels | travelFilter filters">
+                <td>{{t.in.date}}</td>
+                <td>{{t.in.time}}</td>
+                <td>{{t.in.location}}</td>
+                <td>{{t.out.time}}</td>
+                <td>{{t.out.location}}</td>
+                <td>{{t.fare && "€ "+t.fare}}</td>
+                <td>Check-uit</td>
+                <td>{{t.product}}</td>
+                <td>{{t.notes || ""}}</td>
             </tr>
         </table>
     </div>

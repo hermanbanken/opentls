@@ -4,20 +4,24 @@ import 'moment-timezone';
 import download from './download';
 import fetch from './fetch';
 import { Promise } from './promise';
-import { Transaction, Travel } from './ovtypes';
+import { Card, Travel, Route } from './ovtypes';
+import './utils';
 
 let downloader = download(fetch);
-// export default downloader;
+export { downloader };
+
 function extract() {
-    var json = require('../python/ov2.json')[0].map((t: any) => new Transaction(t));
-    var travels = Travel.extract(json);
-    console.log(travels)
-    console.log(travels.length)
+    var cards: Card[] = require('../python/ov3.json').map((t: any) => new Card(t));
+    var travels = cards.map(c => Travel.extract(c.transactions));
+    travels.forEach(travels => {
+        console.log(travels)
+        console.log(travels.length)
+    });
 }
-export = extract
+export default extract
 
 let moment = require('moment-timezone');
-let OV = require('../python/log.json')
+let OV = require('../python/ov3.json')
 
 // if(typeof window != 'undefined') {
 //     var scope: any = window
@@ -50,6 +54,23 @@ Vue.filter('euro', function (money: number) {
     return money && ("€ " + money.toFixed(2).replace(',', '').replace('.', ','));
 })
 
+Vue.filter('travelFilter', function (list: Travel[], filters: any[]) {
+    var days = "ma,di,wo,do,vr,za,zo".split(",")
+    if(!filters && filters.length == 0) return list;
+    return list.filter(travel => {
+        var day = days[parseInt(moment(travel.in.timestamp).format("e"))];
+        return filters.some(filter => {
+            return filter.days.indexOf(day) >= 0 && (
+                filter.location == travel.in.location || 
+                filter.location == travel.out.location
+            );
+        }); 
+    });
+})
+
+// Array.prototype.flatten = 
+
+
 new Vue({
     el: '#app',
     data: { 
@@ -61,9 +82,72 @@ new Vue({
                 zipcode: "1000AA",
                 street: "Prinsengracht 1",
             }
+        },
+        filters: [],
+        filter: {
+            location: []
+        }
+    },
+    computed: {
+        travels: function(){
+            var cards: Card[] = this.cards.map((t: any) => new Card(t));
+            var travels = cards.map(c => Travel.extract(c.transactions));
+            return travels.reduce((p, n) => p.concat(n), []);
+        },
+        routes: function(){
+            return (<Travel[]>this.travels)
+                .map(t => new Route(t))
+                .distinct();
+        },
+
+        locations: function() {
+            return (<Route[]>this.routes)
+                .map(r => [r.a, r.b])
+                .flatten()
+                .distinct();
         }
     },
     methods: {
+        addEmptyFilter: function(){
+            this.filters.push({ location: null, days: [] });
+        },
+        toggleDays: function(list: string[], which: string[] | string) {
+            if(typeof which == 'string') {
+                if(which == 'all') which = <string[]>this.days();
+                else if(which == 'work') which = <string[]>this.days().slice(0, 5)
+                else which = [<string>which]; 
+            }
+            var enable = !which.every(f => list.indexOf(f) >= 0);
+            which.forEach(f => {
+                var index = list.indexOf(f)
+                if(enable && index < 0) {
+                    list.push(f);
+                } else if(!enable && index >= 0) {
+                    list.splice(index, 1);
+                }
+            })
+        },
+        toggleLocation: function(location: string, which: string[] | string) {
+            if(typeof which == 'string') {
+                if(which == 'all') which = <string[]>this.days();
+                else if(which == 'work') which = <string[]>this.days().slice(0, 5)
+                else which = [<string>which]; 
+            }
+            var filters = which.map(w => location+","+w);
+            var enable = !filters.every(f => this.filter.location.indexOf(filters[0]) >= 0);
+            filters.forEach(f => {
+                console.log('toggling', f)
+                var index = this.filter.location.indexOf(f)
+                if(enable && index < 0) {
+                    this.filter.location.push(f);
+                } else if(!enable && index >= 0) {
+                    this.filter.location.splice(index, 1);
+                }
+            })
+        },
+        days: function(){
+            return ["ma", "di", "wo", "do", "vr", "za", "zo"]
+        },
         minDate: function(card: any) {
             return card.transactions.reduce(
                 (p: number, t: any) => 
@@ -91,23 +175,15 @@ new Vue({
                 p + (t.fare || 0), 
                 0
             )
+        },
+        saveFilters: function () {
+            localStorage.setItem("filters", JSON.stringify(this.filters));
         }
     },
     ready: function(){
-        this.cards.forEach((card: any) => {
-            card.transactions = card.transactions.filter((c: any) => c.transactionName == 'Check-uit' || c.transactionName == 'Check-in');
-            for(var i = 0; i < card.transactions.length; i++) {
-                let d = card.transactions[i];
-                let next = card.transactions[i-1];
-                if(d.transactionName == 'Check-in' && next && next.transactionName == "Check-uit") {
-                    Vue.set(next, "checkInTime", d.transactionDateTime);
-                }
-                if(d.transactionName == 'Check-uit') {
-                    Vue.set(d, "checkOutInfo", d.transactionInfo);
-                    Vue.set(d, "checkOutTime", d.transactionDateTime);
-                }
-            }
-            card.transactions = card.transactions.filter((c: any) => c.transactionName == 'Check-uit');
+        this.filters = JSON.parse(localStorage.getItem("filters")) || [];
+        this.$watch('filters', this.saveFilters, {
+            deep: true
         })
     }
 })

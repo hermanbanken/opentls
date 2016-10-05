@@ -63,8 +63,10 @@ export class TransactionAction {
         var date = moment(t.transactionDateTime).tz('Europe/Amsterdam')
         this.date = date.format('DD-MM-YYYY')
         this.time = date.format('HH:mm')
+        this.timestamp = t.transactionDateTime
     }
 
+    timestamp: number;
     date: string
     time: string
     location: string
@@ -76,6 +78,7 @@ export class Travel {
     fare: string
     product: string
     notes: string
+    modalType: string
 
     constructor(tin: Transaction, tout: Transaction) {
         this.in = tin.action();
@@ -83,6 +86,7 @@ export class Travel {
         
         this.fare = (tout.fare && tout.fare.toFixed(2).replace('.', ',')) || null;
         this.product = tout.productInfo
+        this.modalType = tout.modalType
         this.notes = ''
     }
 
@@ -91,7 +95,7 @@ export class Travel {
             .filter(a => isIn(a) || isOut(a))
             .sort((a, b) => a.transactionDateTime - b.transactionDateTime)
         return pairwise(sorted, (a, b) => {
-            if(isIn(a) && isOut(b)) {
+            if(isIn(a) && isOut(b) && a.transactionInfo == b.checkInInfo) {
                 if(a.transactionDateTime > b.transactionDateTime) {
                     throw new Error("Invalid sort!")
                 }
@@ -100,6 +104,27 @@ export class Travel {
                 return []
             }
         })
+    }
+}
+
+export interface IComparable {
+    localeCompare<T extends IComparable>(other: T): number
+}
+
+export class Route implements IComparable {
+    a: string
+    b: string
+    modalType: string
+    constructor(travel: Travel) {
+        this.modalType = travel.modalType;
+        [this.a, this.b] = [travel.in.location, travel.out.location].sort();
+    }
+    localeCompare(other: Route): number {
+        if(this.a != other.a) 
+            return this.a.localeCompare(other.a);
+        if(this.b != other.b) 
+            return this.b.localeCompare(other.b);
+        return this.modalType.localeCompare(other.modalType);
     }
 }
 
