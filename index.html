@@ -1,6 +1,7 @@
 <html>
 <title>Dit overzicht voldoet aan de eisen van de Belastingdienst.</title>
 <meta charset="UTF-8">
+<link rel="shortcut icon" href="favicon.ico" type="image/ico" />
 <link rel="stylesheet" type="text/css" href="app.css" />
 <div id="app" class="print-overview" v-cloak>
     <div v-for="card in cards" class="spec" v-bind:class="{ noprint: fareSum(cardTravels(card, filters)) == 0 }">
