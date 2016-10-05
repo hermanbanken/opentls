@@ -4,9 +4,17 @@ import 'moment-timezone';
 import download from './download';
 import fetch from './fetch';
 import { Promise } from './promise';
+import { Transaction, Travel } from './ovtypes';
 
 let downloader = download(fetch);
-export = downloader;
+// export default downloader;
+function extract() {
+    var json = require('../python/ov2.json')[0].map((t: any) => new Transaction(t));
+    var travels = Travel.extract(json);
+    console.log(travels)
+    console.log(travels.length)
+}
+export = extract
 
 let moment = require('moment-timezone');
 let OV = require('../python/log.json')
