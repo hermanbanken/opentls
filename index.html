@@ -3,7 +3,7 @@
 <meta charset="UTF-8">
 <link rel="stylesheet" type="text/css" href="app.css" />
 <div id="app" class="print-overview" v-cloak>
-    <div v-for="card in cards" class="spec" v-show="fareSum(card) > 0">
+    <div v-for="card in cards" class="spec" v-bind:class="{ noprint: fareSum(cardTravels(card, filters)) == 0 }">
         <div class="banner">
             <div class="line"></div>
             <img src="ovchipkaart.png" />
@@ -19,12 +19,12 @@
             <tr><td colspan=4></td></tr>
             <tr><th colspan=2>Transacties</th></tr>
             <tr>
-                <th>Periode van</th><td>{{minDate(card) | dateDay}}</td>
-                <th>Totaal declaratie</th><td>{{fareSum(card) | euro}}</td>
+                <th>Periode van</th><td>{{minDate(cardTravels(card, filters)) | dateDay}}</td>
+                <th>Totaal declaratie</th><td>{{fareSum(cardTravels(card, filters)) | euro}}</td>
             </tr>
             <tr>
-                <th>Periode t/m</th><td>{{maxDate(card) | dateDay}}</td>
-                <th>Totaal geladen</th><td>{{chargeSum(card) | euro}}</td>
+                <th>Periode t/m</th><td>{{maxDate(cardTravels(card, filters)) | dateDay}}</td>
+                <th>Totaal geladen</th><td>{{0 | euro}}</td>
             </tr>
         </table>
         <p>{{card.statusAnnouncement}}</p>
@@ -32,6 +32,7 @@
         <h3 class="noprint">Filters</h3>
         <ul class="noprint filters">
             <li v-for="filter in filters" class="filter">
+                <input type="checkbox" v-model="filter.enabled" />
                 <label>Locatie:
                 <select v-model="filter.location">
                     <option v-for="location in locations">{{ location }}</option>
@@ -68,7 +69,7 @@
                 <th>Product</th>
                 <th>Opmerkingen</th>
             </thead>
-            <tr v-for="t in travels | travelFilter filters">
+            <tr v-for="t in cardTravels(card) | travelFilter filters">
                 <td>{{t.in.date}}</td>
                 <td>{{t.in.time}}</td>
                 <td>{{t.in.location}}</td>

@@ -69,7 +69,8 @@ Vue.filter('travelFilter', function (list: Travel[], filters: any[]) {
     return list.filter(travel => {
         var day = DAYS[parseInt(moment(travel.in.timestamp).format("e"))];
         return filters.some(filter => {
-            return filter.days.indexOf(day) >= 0 && (
+            return filter.enabled !== false && 
+                filter.days.indexOf(day) >= 0 && (
                 filter.location == travel.in.location || 
                 filter.location == travel.out.location
             );
@@ -113,12 +114,16 @@ new Vue({
         }
     },
     methods: {
-        cardTravels: function(card: Card){
-            var travels = Travel.extract(card.transactions.map(t => new Transaction(t)));
-            return travels.reduce((p, n) => p.concat(n), []);
+        cardTravels: function(card: Card, filter: any){
+            var travels = Travel.extract(card.transactions);
+            if(filter) {
+                var f = Vue.filter('travelFilter')
+                return f(travels, filter)
+            }
+            return travels;
         },
         addEmptyFilter: function(){
-            this.filters.push({ location: null, days: [] });
+            this.filters.push({ location: null, days: [], enabled: true });
         },
         toggleDays: function(list: string[], which: string[] | string) {
             if(typeof which == 'string') {
@@ -157,17 +162,17 @@ new Vue({
         days: function(){
             return ["ma", "di", "wo", "do", "vr", "za", "zo"]
         },
-        minDate: function(card: any) {
-            return card.transactions.reduce(
-                (p: number, t: any) => 
-                (p != -1) ? Math.min(p, t.transactionDateTime) : t.transactionDateTime, 
+        minDate: function(travels: Travel[]) {
+            return travels.reduce(
+                (p: number, t: any) =>
+                (p != -1) ? Math.min(p, t.in.timestamp) : t.in.timestamp, 
                 -1
             )
         },
-        maxDate: function(card: any) {
-            return card.transactions.reduce(
-                (p: number, t: any) => 
-                (p != -1) ? Math.max(p, t.transactionDateTime) : t.transactionDateTime, 
+        maxDate: function(travels: Travel[]) {
+            return travels.reduce(
+                (p: number, t: any) =>
+                (p != -1) ? Math.max(p, t.in.timestamp) : t.in.timestamp, 
                 -1
             )
         },
@@ -178,10 +183,8 @@ new Vue({
                 0
             )
         },
-        fareSum: function(card: any) {
-            var filter = Vue.filter('travelFilter')
-            return filter(this.cardTravels(card), this.filters)
-            .reduce(
+        fareSum: function(travels: Travel[]) {
+            return travels.reduce(
                 (p: number, t: any) => 
                 p + (t.fare || 0), 
                 0
