@@ -4,7 +4,7 @@ import 'moment-timezone';
 import download from './download';
 import fetch from './fetch';
 import { Promise } from './promise';
-import { Card, Travel, Route } from './ovtypes';
+import { Card, Travel, Route, Transaction } from './ovtypes';
 import './utils';
 
 let downloader = download(fetch);
@@ -21,7 +21,7 @@ function extract() {
 export default extract
 
 let moment = require('moment-timezone');
-let OV = require('../python/ov3.json')
+let OV = require('../python/ov3.json').map((c: any) => new Card(c));
 
 // if(typeof window != 'undefined') {
 //     var scope: any = window
@@ -30,6 +30,8 @@ let OV = require('../python/ov3.json')
 
 if(typeof Vue != 'undefined') {
 
+const DAYS = "zo,ma,di,wo,do,vr,za".split(",")
+    
 Vue.filter('reverse', function <T> (list: [T]) {
     return list.slice().reverse();
 })
@@ -46,19 +48,26 @@ Vue.filter('dateDay', function (timestamp: number) {
     return moment(timestamp).tz('Europe/Amsterdam').format('DD-MM-YYYY')
 })
 
+Vue.filter('weekDay', function (timestamp: number) {
+    var day = DAYS[parseInt(moment(timestamp).format("e"))];
+    return day;
+})
+
 Vue.filter('toUpper', function (text: string) {
     return text && text.toUpperCase();
 })
 
 Vue.filter('euro', function (money: number) {
-    return money && ("€ " + money.toFixed(2).replace(',', '').replace('.', ','));
+    if(typeof money == 'number')
+        return ("€ " + money.toFixed(2).replace(',', '').replace('.', ','))
+    if(typeof money == 'string')
+        return "€ " + money;
 })
 
 Vue.filter('travelFilter', function (list: Travel[], filters: any[]) {
-    var days = "ma,di,wo,do,vr,za,zo".split(",")
-    if(!filters && filters.length == 0) return list;
+    if(!list || !filters || filters.length == 0) return list;
     return list.filter(travel => {
-        var day = days[parseInt(moment(travel.in.timestamp).format("e"))];
+        var day = DAYS[parseInt(moment(travel.in.timestamp).format("e"))];
         return filters.some(filter => {
             return filter.days.indexOf(day) >= 0 && (
                 filter.location == travel.in.location || 
@@ -67,9 +76,6 @@ Vue.filter('travelFilter', function (list: Travel[], filters: any[]) {
         }); 
     });
 })
-
-// Array.prototype.flatten = 
-
 
 new Vue({
     el: '#app',
@@ -90,8 +96,7 @@ new Vue({
     },
     computed: {
         travels: function(){
-            var cards: Card[] = this.cards.map((t: any) => new Card(t));
-            var travels = cards.map(c => Travel.extract(c.transactions));
+            var travels = Travel.extract(this.cards[0].transactions);
             return travels.reduce((p, n) => p.concat(n), []);
         },
         routes: function(){
@@ -108,6 +113,10 @@ new Vue({
         }
     },
     methods: {
+        cardTravels: function(card: Card){
+            var travels = Travel.extract(card.transactions.map(t => new Transaction(t)));
+            return travels.reduce((p, n) => p.concat(n), []);
+        },
         addEmptyFilter: function(){
             this.filters.push({ location: null, days: [] });
         },
@@ -170,7 +179,9 @@ new Vue({
             )
         },
         fareSum: function(card: any) {
-            return card.transactions.reduce(
+            var filter = Vue.filter('travelFilter')
+            return filter(this.cardTravels(card), this.filters)
+            .reduce(
                 (p: number, t: any) => 
                 p + (t.fare || 0), 
                 0

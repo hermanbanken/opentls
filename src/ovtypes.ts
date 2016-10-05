@@ -75,7 +75,7 @@ export class TransactionAction {
 export class Travel {
     in: TransactionAction
     out: TransactionAction
-    fare: string
+    fare: number | null
     product: string
     notes: string
     modalType: string
@@ -84,7 +84,7 @@ export class Travel {
         this.in = tin.action();
         this.out = tout.action();
         
-        this.fare = (tout.fare && tout.fare.toFixed(2).replace('.', ',')) || null;
+        this.fare = tout.fare || null;
         this.product = tout.productInfo
         this.modalType = tout.modalType
         this.notes = ''

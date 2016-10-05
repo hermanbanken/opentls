@@ -74,10 +74,10 @@
                 <td>{{t.in.location}}</td>
                 <td>{{t.out.time}}</td>
                 <td>{{t.out.location}}</td>
-                <td>{{t.fare && "€ "+t.fare}}</td>
+                <td>{{t.fare | euro}}</td>
                 <td>Check-uit</td>
                 <td>{{t.product}}</td>
-                <td>{{t.notes || ""}}</td>
+                <td>{{t.notes}}{{t.in.timestamp | weekDay}}</td>
             </tr>
         </table>
     </div>
