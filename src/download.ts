@@ -10,7 +10,9 @@ export type Fetch = (url: string, options: any) => Promise<Response>
 const CLIENT_ID     = "nmOIiEJO5khvtLBK9xad3UkkS8Ua"
 const CLIENT_SECRET = "FE8ef6bVBiyN0NeyUJ5VOWdelvQa"
 
-export default function(fetch: Fetch): (username: string, password: string) => Promise<[Card]> {
+export type ContinueFilter = (currentOffset: number, nextOffset: number, transactions: Transaction[]) => boolean;
+
+export default function(fetch: Fetch): (username: string, password: string, filter: ContinueFilter) => Promise<[Card]> {
 
     function get_token(username: string, password: string, client_id = CLIENT_ID, client_secret = CLIENT_SECRET): Promise<any> {
         return fetch("https://login.ov-chipkaart.nl/oauth2/token", {
@@ -69,7 +71,7 @@ export default function(fetch: Fetch): (username: string, password: string) => P
         })
     }
 
-    function get_transaction_list(authorizationToken: string, mediumId: string, offset = 0, locale="nl-NL"): Promise<[Transaction]> {
+    function get_transaction_list(authorizationToken: string, mediumId: string, filter: ContinueFilter, offset = 0, locale="nl-NL"): Promise<[Transaction]> {
         let data: { [s: string]: (string | number) } = {
             authorizationToken,
             mediumId,
@@ -84,9 +86,10 @@ export default function(fetch: Fetch): (username: string, password: string) => P
         .then((json: any) => json['o'])
         .then((result: any) => {
             let head: [Transaction] = result.records;
-            if(offset < result.nextOffset) {
+            if(filter(offset, result.nextOffset, head)) {
                 return get_transaction_list(
                     authorizationToken, mediumId, 
+                    filter,
                     parseInt(result.nextOffset), locale
                 )
                 .then((tail: [Transaction]) => head.concat(tail))
@@ -96,12 +99,16 @@ export default function(fetch: Fetch): (username: string, password: string) => P
         })
     }
 
-    return function run(username: string, password: string): Promise<[Card]> {
+    const defaultFilter: ContinueFilter = (currentOffset: number, nextOffset: number, transactions: Transaction[]) => {
+        return currentOffset < nextOffset;
+    } 
+
+    return function run(username: string, password: string, filter: ContinueFilter = defaultFilter): Promise<[Card]> {
         return get_token(username, password)
             .then(oauth => get_authorization(oauth["id_token"]))
             .then(auth => get_cards_list(auth)
                 .then((cards: [Card]) => Promise.all(cards.map((card: Card) =>
-                    get_transaction_list(auth, card.mediumId).then(ts => {
+                    get_transaction_list(auth, card.mediumId, filter).then(ts => {
                         card.transactions = ts
                         return card
                     })
