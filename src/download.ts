@@ -1,10 +1,5 @@
-/// <reference path="../typings/index.d.ts" />
-import { Promise } from './promise'
 import { Card, Transaction } from './ovtypes'
 
-interface Response {
-    json(): Promise<any>
-}
 export type Fetch = (url: string, options: any) => Promise<Response>
 
 const CLIENT_ID     = "nmOIiEJO5khvtLBK9xad3UkkS8Ua"

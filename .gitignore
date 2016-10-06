@@ -1,3 +1,4 @@
 node_modules
 bower_components
 typings/globals
+local_test.sh

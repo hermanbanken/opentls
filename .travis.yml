@@ -1,0 +1,16 @@
+sudo: 
+  - false
+language: 
+  - node_js
+node_js:
+  - '6.1'
+before_install:
+  - npm install -g typescript@2.0.3
+script: 
+  - npm test
+branches:
+  only:
+    - master
+env:
+  global:
+  - secure: <encrypted API userpass here>

@@ -1,9 +1,7 @@
-/// <reference path="../typings/index.d.ts" />
-import 'whatwg-fetch';
-import 'moment-timezone';
-import download from './download';
+import * as moment from 'moment-timezone';
+import * as Vue from 'vue';
+import download, { ContinueFilter } from './download';
 import fetch from './fetch';
-import { Promise } from './promise';
 import { Card, Travel, Route, Transaction } from './ovtypes';
 import './utils';
 
@@ -20,7 +18,6 @@ function extract() {
 }
 export default extract
 
-let moment = require('moment-timezone');
 let OV = require('../python/ov3.json').map((c: any) => new Card(c));
 
 // if(typeof window != 'undefined') {
