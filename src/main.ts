@@ -12,7 +12,7 @@ let downloader = download(fetch);
 export { downloader };
 
 function extract() {
-    var cards: Card[] = require('../python/ov3.json').map((t: any) => new Card(t));
+    var cards: Card[] = require('../../api_sample.json').map((t: any) => new Card(t));
     var travels = cards.map(c => Travel.extract(c.transactions));
     travels.forEach(travels => {
         console.log(travels)
@@ -21,7 +21,7 @@ function extract() {
 }
 export default extract
 
-let OV = require('../python/ov3.json').map((c: any) => new Card(c));
+let OV = require('../../api_sample.json').map((c: any) => new Card(c));
 
 // if(typeof window != 'undefined') {
 //     var scope: any = window
