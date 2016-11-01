@@ -1,9 +1,12 @@
 import * as moment from 'moment-timezone';
-import * as Vue from 'vue';
 import download, { ContinueFilter } from './download';
 import fetch from './fetch';
 import { Card, Travel, Route, Transaction } from './ovtypes';
 import './utils';
+
+if(typeof process === "undefined") {
+    let Vue = require('vue');
+}
 
 let downloader = download(fetch);
 export { downloader };
@@ -25,6 +28,7 @@ let OV = require('../python/ov3.json').map((c: any) => new Card(c));
 //     scope.run = run;
 // }
 
+declare const Vue: any
 if(typeof Vue != 'undefined') {
 
 const DAYS = "zo,ma,di,wo,do,vr,za".split(",")
@@ -61,7 +65,7 @@ Vue.filter('euro', function (money: number) {
         return "€ " + money;
 })
 
-Vue.filter('travelFilter', function (list: Travel[], filters: any[]) {
+function travelFilter(list: Travel[], filters: any[]) {
     if(!list || !filters || filters.length == 0) return list;
     return list.filter(travel => {
         var day = DAYS[parseInt(moment(travel.in.timestamp).format("e"))];
@@ -73,9 +77,10 @@ Vue.filter('travelFilter', function (list: Travel[], filters: any[]) {
             );
         }); 
     });
-})
+}
+Vue.filter('travelFilter', travelFilter)
 
-new Vue({
+var component = {
     el: '#app',
     data: { 
         cards: OV,
@@ -87,9 +92,9 @@ new Vue({
                 street: "Prinsengracht 1",
             }
         },
-        filters: [],
+        filters: [] as any[],
         filter: {
-            location: []
+            location: [] as any[]
         }
     },
     computed: {
@@ -111,6 +116,8 @@ new Vue({
         }
     },
     methods: {
+        travelFilter: travelFilter,
+
         cardTravels: function(card: Card, filter: any){
             var travels = Travel.extract(card.transactions);
             if(filter) {
@@ -197,6 +204,8 @@ new Vue({
             deep: true
         })
     }
-})
+}
+
+new Vue(component)
 
 }

@@ -9,9 +9,9 @@
   "typings": "build/bundle",
   "scripts": {
     "compile": "tsc",
-    "watch": "tsc -w | node_modules/.bin/watchify -v -d build/main.js -o build/app.js",
-    "start": "node build/main.js",
-    "bundle": "browserify build/main.js > build/app.js",
+    "watch": "tsc -w | node_modules/.bin/watchify -v -d build/src/main.js -o build/app.js",
+    "start": "node build/src/main.js",
+    "bundle": "browserify -t 6to5ify -t aliasify --debug build/src/main.js > build/app.js",
     "test": "tsc -p . && mocha build/test",
     "prepublish": "tsc -p ."
   },
@@ -26,9 +26,11 @@
   },
   "homepage": "https://github.com/StichtingOpenGeo/opentls#readme",
   "devDependencies": {
+    "6to5ify": "^4.1.1",
     "@types/node": "^6.0.45",
     "@types/vue": "^1.0.31",
     "@types/whatwg-fetch": "0.0.32",
+    "aliasify": "^2.0.0",
     "browserify": "^13.1.0",
     "mocha": "^3.1.0",
     "mocha-typescript": "^1.0.10",
@@ -44,6 +46,12 @@
     "@types/moment-timezone": "^0.2.31",
     "moment-timezone": "^0.5.5",
     "momentjs": "^1.1.17",
-    "pinkie-promise": "^2.0.1"
+    "pinkie-promise": "^2.0.1",
+    "vue": "2.0.3"
+  },
+  "aliasify": {
+    "aliases": {
+      "vue": "vue/dist/vue.js"
+    }
   }
 }

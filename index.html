@@ -70,7 +70,7 @@
                 <th>Product</th>
                 <th>Opmerkingen</th>
             </thead>
-            <tr v-for="t in cardTravels(card) | travelFilter filters">
+            <tr v-for="t in travelFilter(cardTravels(card), filters)">
                 <td>{{t.in.date}}</td>
                 <td>{{t.in.time}}</td>
                 <td>{{t.in.location}}</td>

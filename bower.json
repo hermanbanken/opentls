@@ -16,10 +16,10 @@
     "tests"
   ],
   "dependencies": {
-    "fetch": "^1.0.0",
     "es6-promise": "^4.0.3",
+    "fetch": "^1.0.0",
     "moment": "^2.15.1",
     "moment-timezone": "^0.5.5",
-    "vue": "^1.0.28"
+    "vue": "~2.0.3"
   }
 }
